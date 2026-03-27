@@ -1,0 +1,146 @@
+import 'package:flutter/material.dart';
+import 'ItineraryPage.dart';
+
+class SignupPage extends StatefulWidget {
+  @override
+  _SignupPageState createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final name = TextEditingController();
+  final email = TextEditingController();
+  final password = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _bg(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(20),
+            child: _card(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _bg({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/travel.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        color: Colors.white.withOpacity(0.2),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _card() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 10,
+            offset: Offset(0, 5),
+            color: Colors.black26,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _title(),
+          SizedBox(height: 25),
+
+          _field(name, "Name", Icons.person, false),
+          SizedBox(height: 15),
+
+          _field(email, "Email", Icons.email, false),
+          SizedBox(height: 15),
+
+          _field(password, "Password", Icons.lock, true),
+
+          SizedBox(height: 25),
+
+          _signupBtn(),
+          SizedBox(height: 15),
+
+          _nextBtn(),
+        ],
+      ),
+    );
+  }
+
+  Widget _title() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.flight_takeoff, color: Colors.blue),
+        SizedBox(width: 8),
+        Text(
+          "Sign Up",
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget _field(controller, text, icon, hide) {
+    return TextField(
+      controller: controller,
+      obscureText: hide,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon),
+        labelText: text,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
+    );
+  }
+
+  Widget _signupBtn() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          print(name.text);
+          print(email.text);
+          print(password.text);
+        },
+        child: Text("Sign Up"),
+      ),
+    );
+  }
+
+  Widget _nextBtn() {
+    return CircleAvatar(
+      radius: 25,
+      backgroundColor: Colors.blue,
+      child: IconButton(
+        icon: Icon(Icons.arrow_forward, color: Colors.white),
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => ItineraryPage(),
+              transitionsBuilder: (_, anim, __, child) {
+                return FadeTransition(opacity: anim, child: child);
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
