@@ -1,0 +1,189 @@
+import 'package:flutter/material.dart';
+import 'TripSummaryPage.dart';
+
+class ItineraryPage extends StatefulWidget {
+  @override
+  _ItineraryPageState createState() => _ItineraryPageState();
+}
+
+class _ItineraryPageState extends State<ItineraryPage> {
+  DateTime? date;
+
+  final people = TextEditingController();
+  final days = TextEditingController();
+  final place = TextEditingController();
+
+  String location = "";
+
+  final List<String> cityList = [
+    "India","Bangalore","Mumbai","Delhi","Paris","France",
+    "New York","USA","Tokyo","Japan","Dubai","London",
+    "Singapore","Maldives"
+  ];
+
+  Future<void> selectDate() async {
+    final result = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2024),
+      lastDate: DateTime(2030),
+    );
+
+    if (result != null) setState(() => date = result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _background(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              children: [
+                _searchBox(),
+                SizedBox(height: 20),
+                _formCard(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _background({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/travel.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        color: Colors.white.withOpacity(0.2),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _searchBox() {
+    return Autocomplete<String>(
+      optionsBuilder: (value) {
+        return cityList.where((e) =>
+            e.toLowerCase().contains(value.text.toLowerCase()));
+      },
+      onSelected: (val) => location = val,
+      fieldViewBuilder: (context, controller, focus, _) {
+        return TextField(
+          controller: controller,
+          focusNode: focus,
+          decoration: InputDecoration(
+            hintText: "Search City / Country",
+            prefixIcon: Icon(Icons.search),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.9),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _formCard() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "Plan Your Trip ✈️",
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 20),
+
+          ListTile(
+            leading: Icon(Icons.calendar_today),
+            title: Text(
+              date == null
+                  ? "Select Travel Date"
+                  : "${date!.day}/${date!.month}/${date!.year}",
+            ),
+            trailing: Icon(Icons.arrow_forward),
+            onTap: selectDate,
+          ),
+
+          SizedBox(height: 10),
+
+          _input(people, "Number of People", Icons.people),
+          SizedBox(height: 15),
+
+          _input(days, "Number of Days", Icons.calendar_view_day),
+          SizedBox(height: 15),
+
+          _input(place, "Favorite Place", Icons.location_on),
+
+          SizedBox(height: 25),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _goNext,
+              child: Text("Create Itinerary"),
+            ),
+          ),
+
+          SizedBox(height: 15),
+
+          CircleAvatar(
+            radius: 25,
+            backgroundColor: Colors.blue,
+            child: IconButton(
+              icon: Icon(Icons.arrow_forward, color: Colors.white),
+              onPressed: _goNext,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _input(controller, text, icon) {
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon),
+        labelText: text,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
+    );
+  }
+
+  void _goNext() {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => TripSummaryPage(
+          location: location,
+          date: date == null
+              ? "Not selected"
+              : "${date!.day}/${date!.month}/${date!.year}",
+          people: people.text,
+          days: days.text,
+          place: place.text,
+        ),
+        transitionsBuilder: (_, anim, __, child) {
+          return FadeTransition(opacity: anim, child: child);
+        },
+      ),
+    );
+  }
+}
